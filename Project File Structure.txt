@@ -1,0 +1,80 @@
+🗂 Project File Structure
+🔹 Backend (ashavriti-backend/)
+ashavriti-backend/
+│── node_modules/
+│── public/
+│   └── logos/
+│── src/
+│   ├── config/
+│   │   └── db.js
+│   ├── middleware/
+│   │   └── auth.js
+│   ├── models/
+│   │   ├── Application.js
+│   │   ├── SagBureau.js
+│   │   └── User.js
+│   ├── routes/
+│   │   ├── sag/
+│   │   │   └── sagAuth.routes.js   (tumne banaya hoga)
+│   │   ├── application.routes.js
+│   │   └── auth.routes.js
+│   ├── utils/
+│   │   └── roles.js
+│   └── server.js
+│
+├── .env
+├── package.json
+├── package-lock.json
+
+🔹 Frontend (src/)
+src/
+│── assets/ (agar ho to images/icons yahan rahenge)
+│── components/
+│   ├── ui/
+│   │   ├── FeatureStats.tsx
+│   │   ├── Footer.tsx
+│   │   ├── Header.tsx
+│   │   ├── Hero.tsx
+│   │   ├── NoticeBoard.tsx
+│   │   └── StatsSection.tsx
+│
+│── contexts/
+│   └── ApplicationContext.tsx
+│
+│── hooks/
+│   ├── use-mobile.tsx
+│   └── use-toast.ts
+│
+│── layouts/
+│   ├── SagLayout.tsx
+│   └── UserLayout.tsx
+│
+│── lib/   (agar libs banaoge to)
+│
+│── pages/
+│   ├── Index.tsx
+│   ├── NotFound.tsx
+│   ├── ProfileSettings.tsx
+│   ├── RecommendScheme.tsx
+│   ├── SchemeApplication.tsx
+│   ├── SchemeDetails.tsx
+│   ├── UserDashboard.tsx
+│   ├── UserLogin.tsx
+│   ├── UserRegister.tsx
+│   ├── ApplicationHistory.tsx
+│   └── sag/
+│       ├── SagApplicationDetail.tsx
+│       ├── SagDashboard.tsx
+│       ├── SagLogin.tsx
+│       └── SagRegister.tsx
+│
+│── utils/
+│   ├── auth.js
+│   ├── ProtectedRoute.tsx
+│   └── SagProtectedRoute.tsx
+│
+│── App.tsx
+│── config.ts
+│── index.css
+│── main.tsx
+│── vite-env.d.ts

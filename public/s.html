@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarFind - Modern Scholarship Platform</title>
+    <!-- React, Framer Motion, and Tailwind CSS -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion/dist/framer-motion.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        
+        /* Custom styles for animation and components */
+        .gradient-bg {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .scroll-hidden {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .scroll-hidden::-webkit-scrollbar {
+            display: none;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Main Scholarship App Component
+        const ScholarshipApp = () => {
+            const [scholarships, setScholarships] = React.useState([
+                {
+                    id: 1,
+                    title: "STEM Excellence Scholarship",
+                    provider: "National Science Foundation",
+                    amount: "$10,000",
+                    deadline: "June 15, 2023",
+                    description: "Awarded to students pursuing degrees in science, technology, engineering, or mathematics with demonstrated academic excellence.",
+                    category: "STEM",
+                    eligibility: "Undergraduate, GPA 3.5+"
+                },
+                {
+                    id: 2,
+                    title: "Global Leadership Award",
+                    provider: "International Education Council",
+                    amount: "$15,000",
+                    deadline: "July 20, 2023",
+                    description: "For students who have demonstrated exceptional leadership skills and a commitment to global engagement.",
+                    category: "Leadership",
+                    eligibility: "All Levels, Leadership Experience"
+                },
+                {
+                    id: 3,
+                    title: "Arts & Humanities Grant",
+                    provider: "Humanities Endowment",
+                    amount: "$8,000",
+                    deadline: "August 5, 2023",
+                    description: "Supporting students pursuing degrees in arts, literature, philosophy, and related humanities fields.",
+                    category: "Arts",
+                    eligibility: "Undergraduate, Portfolio Required"
+                },
+                {
+                    id: 4,
+                    title: "First-Generation Student Fund",
+                    provider: "Equity in Education Foundation",
+                    amount: "$12,000",
+                    deadline: "September 10, 2023",
+                    description: "Designed to support students who are the first in their family to attend college or university.",
+                    category: "Need-Based",
+                    eligibility: "First-Generation Students"
+                }
+            ]);
+            
+            const [searchTerm, setSearchTerm] = React.useState("");
+            const [selectedCategory, setSelectedCategory] = React.useState("All");
+            
+            // Filter scholarships based on search and category
+            const filteredScholarships = scholarships.filter(scholarship => {
+                const matchesSearch = scholarship.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                      scholarship.description.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesCategory = selectedCategory === "All" || scholarship.category === selectedCategory;
+                return matchesSearch && matchesCategory;
+            });
+            
+            // Categories for filtering
+            const categories = ["All", "STEM", "Leadership", "Arts", "Need-Based"];
+            
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    {/* Header */}
+                    <header className="sticky top-0 z-50 bg-white shadow-sm">
+                        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+                            <div className="flex items-center space-x-2">
+                                <div className="bg-indigo-600 text-white p-2 rounded-lg">
+                                    <i className="fas fa-graduation-cap text-xl"></i>
+                                </div>
+                                <h1 className="text-2xl font-bold text-gray-800">Scholar<span className="text-indigo-600">Find</span></h1>
+                            </div>
+                            
+                            <nav className="hidden md:flex space-x-8">
+                                <a href="#" className="text-gray-600 hover:text-indigo-600 font-medium">Home</a>
+                                <a href="#" className="text-gray-600 hover:text-indigo-600 font-medium">Scholarships</a>
+                                <a href="#" className="text-gray-600 hover:text-indigo-600 font-medium">Resources</a>
+                                <a href="#" className="text-gray-600 hover:text-indigo-600 font-medium">About</a>
+                            </nav>
+                            
+                            <div className="flex items-center space-x-4">
+                                <button className="hidden md:block text-gray-600 hover:text-indigo-600">
+                                    <i className="fas fa-search"></i>
+                                </button>
+                                <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                                    Sign In
+                                </button>
+                                <button className="md:hidden text-gray-600">
+                                    <i className="fas fa-bars text-xl"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    {/* Hero Section */}
+                    <section className="gradient-bg text-white py-16 md:py-24">
+                        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
+                            <div className="md:w-1/2 mb-10 md:mb-0">
+                                <motion.h1 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8 }}
+                                    className="text-4xl md:text-5xl font-bold mb-6"
+                                >
+                                    Find the Perfect Scholarship for Your Future
+                                </motion.h1>
+                                <motion.p 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, delay: 0.2 }}
+                                    className="text-xl mb-8 opacity-90"
+                                >
+                                    Discover thousands of scholarships tailored to your background, interests, and goals.
+                                </motion.p>
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, delay: 0.4 }}
+                                    className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"
+                                >
+                                    <button className="bg-white text-indigo-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                        Browse Scholarships
+                                    </button>
+                                    <button className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition-colors">
+                                        How It Works
+                                    </button>
+                                </motion.div>
+                            </div>
+                            <div className="md:w-1/2 flex justify-center">
+                                <motion.div 
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.8, delay: 0.6 }}
+                                    className="relative"
+                                >
+                                    <div className="floating">
+                                        <div className="bg-white p-6 rounded-2xl shadow-xl max-w-md">
+                                            <div className="flex items-center mb-4">
+                                                <div className="bg-indigo-100 p-2 rounded-lg mr-4">
+                                                    <i className="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-bold text-gray-800">STEM Excellence Scholarship</h3>
+                                                    <p className="text-gray-600 text-sm">National Science Foundation</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between items-center mb-4">
+                                                <span className="bg-indigo-100 text-indigo-800 text-sm font-medium px-3 py-1 rounded-full">STEM</span>
+                                                <span className="text-lg font-bold text-indigo-600">$10,000</span>
+                                            </div>
+                                            <p className="text-gray-600 mb-4">Awarded to students pursuing degrees in science, technology, engineering, or mathematics.</p>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm text-gray-500"><i className="far fa-clock mr-1"></i> June 15, 2023</span>
+                                                <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">Apply Now</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Decorative elements */}
+                                    <div className="absolute -top-4 -right-4 w-12 h-12 bg-yellow-400 rounded-full opacity-20"></div>
+                                    <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-pink-400 rounded-full opacity-20"></div>
+                                </motion.div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    {/* Search and Filter Section */}
+                    <section className="py-12 bg-white">
+                        <div className="container mx-auto px-4">
+                            <div className="max-w-3xl mx-auto mb-12 text-center">
+                                <h2 className="text-3xl font-bold text-gray-800 mb-4">Find Your Perfect Scholarship Match</h2>
+                                <p className="text-gray-600">Search from thousands of scholarships tailored to your unique background, interests, and academic goals.</p>
+                            </div>
+                            
+                            <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6 mb-8">
+                                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-6">
+                                    <div className="flex-1 mb-4 md:mb-0">
+                                        <div className="relative">
+                                            <i className="fas fa-search absolute left-4 top-3 text-gray-400"></i>
+                                            <input
+                                                type="text"
+                                                placeholder="Search scholarships by keyword, subject, or provider..."
+                                                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex space-x-2 overflow-x-auto scroll-hidden pb-2 md:pb-0">
+                                        {categories.map(category => (
+                                            <button
+                                                key={category}
+                                                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${selectedCategory === category ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                                onClick={() => setSelectedCategory(category)}
+                                            >
+                                                {category}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                                    <div className="flex items-center">
+                                        <i className="fas fa-check-circle text-green-500 mr-2"></i>
+                                        <span>100% Free to Apply</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <i className="fas fa-check-circle text-green-500 mr-2"></i>
+                                        <span>Personalized Matches</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <i className="fas fa-check-circle text-green-500 mr-2"></i>
+                                        <span>Deadline Alerts</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    {/* Scholarships Listing */}
+                    <section className="py-12 bg-gray-50">
+                        <div className="container mx-auto px-4">
+                            <h2 className="text-3xl font-bold text-gray-800 mb-2 text-center">Featured Scholarships</h2>
+                            <p className="text-gray-600 text-center mb-12">Curated opportunities from trusted providers</p>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {filteredScholarships.map(scholarship => (
+                                    <motion.div 
+                                        key={scholarship.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5 }}
+                                        className="card-hover bg-white rounded-xl overflow-hidden shadow-md"
+                                    >
+                                        <div className="p-6">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <span className="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full font-medium mb-2">
+                                                        {scholarship.category}
+                                                    </span>
+                                                    <h3 className="text-xl font-bold text-gray-800 mb-2">{scholarship.title}</h3>
+                                                    <p className="text-gray-600 text-sm">{scholarship.provider}</p>
+                                                </div>
+                                                <button className="text-gray-400 hover:text-indigo-600">
+                                                    <i className="far fa-bookmark"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <p className="text-gray-600 mb-6">{scholarship.description}</p>
+                                            
+                                            <div className="flex justify-between items-center mb-6">
+                                                <div>
+                                                    <div className="text-xs text-gray-500">AWARD AMOUNT</div>
+                                                    <div className="font-bold text-indigo-600">{scholarship.amount}</div>
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs text-gray-500">DEADLINE</div>
+                                                    <div className="font-medium text-gray-800">{scholarship.deadline}</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm text-gray-500">{scholarship.eligibility}</span>
+                                                <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                                                    Apply Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                            
+                            {filteredScholarships.length === 0 && (
+                                <div className="text-center py-12">
+                                    <i className="fas fa-search text-4xl text-gray-300 mb-4"></i>
+                                    <h3 className="text-xl font-medium text-gray-600">No scholarships match your search criteria</h3>
+                                    <p className="text-gray-500">Try adjusting your search or filters</p>
+                                </div>
+                            )}
+                            
+                            <div className="text-center mt-12">
+                                <button className="bg-white text-indigo-600 border border-indigo-600 px-6 py-3 rounded-lg font-medium hover:bg-indigo-50 transition-colors">
+                                    View All Scholarships
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    {/* How It Works Section */}
+                    <section className="py-16 bg-white">
+                        <div className="container mx-auto px-4">
+                            <div className="text-center mb-16">
+                                <h2 className="text-3xl font-bold text-gray-800 mb-4">How It Works</h2>
+                                <p className="text-gray-600 max-w-2xl mx-auto">Our simple process helps you find and apply for scholarships in just a few easy steps</p>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5 }}
+                                    className="text-center p-6"
+                                >
+                                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <i className="fas fa-user-circle text-indigo-600 text-2xl"></i>
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-gray-800 mb-4">1. Create Your Profile</h3>
+                                    <p className="text-gray-600">Tell us about your background, interests, and academic goals to get personalized recommendations.</p>
+                                </motion.div>
+                                
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                    className="text-center p-6"
+                                >
+                                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <i className="fas fa-search text-indigo-600 text-2xl"></i>
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-gray-800 mb-4">2. Find Scholarships</h3>
+                                    <p className="text-gray-600">Browse curated scholarships that match your profile or search our database of thousands of opportunities.</p>
+                                </motion.div>
+                                
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, delay: 0.4 }}
+                                    className="text-center p-6"
+                                >
+                                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <i className="fas fa-file-alt text-indigo-600 text-2xl"></i>
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-gray-800 mb-4">3. Apply & Win</h3>
+                                    <p className="text-gray-600">Submit applications directly through our platform and get notified about upcoming deadlines.</p>
+                                </motion.div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    {/* Testimonials Section */}
+                    <section className="py-16 bg-indigo-50">
+                        <div className="container mx-auto px-4">
+                            <div className="text-center mb-12">
+                                <h2 className="text-3xl font-bold text-gray-800 mb-4">Success Stories</h2>
+                                <p className="text-gray-600">Hear from students who found their perfect scholarship through our platform</p>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5 }}
+                                    className="bg-white p-6 rounded-xl shadow-md"
+                                >
+                                    <div className="flex items-center mb-4">
+                                        <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                                            <i className="fas fa-user-graduate text-indigo-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-gray-800">Jessica Chen</h4>
+                                            <p className="text-sm text-gray-500">Computer Science Student</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-600 mb-4">"Thanks to ScholarFind, I discovered a scholarship that perfectly matched my background in STEM. The application process was straightforward, and I was awarded $15,000 towards my education!"</p>
+                                    <div className="flex text-yellow-400">
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                    </div>
+                                </motion.div>
+                                
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                    className="bg-white p-6 rounded-xl shadow-md"
+                                >
+                                    <div className="flex items-center mb-4">
+                                        <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                                            <i className="fas fa-user-graduate text-indigo-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-gray-800">Marcus Johnson</h4>
+                                            <p className="text-sm text-gray-500">Business Major</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-600 mb-4">"As a first-generation student, I was overwhelmed by the scholarship search process. ScholarFind made it easy to find opportunities I qualified for, and I ended up securing funding for my entire freshman year!"</p>
+                                    <div className="flex text-yellow-400">
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                    </div>
+                                </motion.div>
+                                
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, delay: 0.4 }}
+                                    className="bg-white p-6 rounded-xl shadow-md"
+                                >
+                                    <div className="flex items-center mb-4">
+                                        <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                                            <i className="fas fa-user-graduate text-indigo-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-gray-800">Sophia Rodriguez</h4>
+                                            <p className="text-sm text-gray-500">Art History Major</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-600 mb-4">"I never thought I'd find scholarships for arts students until I used ScholarFind. Their curated list helped me discover niche opportunities that weren't listed on other platforms. I'm now funded for my study abroad program!"</p>
+                                    <div className="flex text-yellow-400">
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                        <i className="fas fa-star"></i>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    {/* Footer */}
+                    <footer className="bg-gray-800 text-white py-12">
+                        <div className="container mx-auto px-4">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                                <div>
+                                    <div className="flex items-center space-x-2 mb-6">
+                                        <div className="bg-indigo-600 text-white p-2 rounded-lg">
+                                            <i className="fas fa-graduation-cap"></i>
+                                        </div>
+                                        <h3 className="text-xl font-bold">ScholarFind</h3>
+                                    </div>
+                                    <p className="text-gray-400 mb-6">Helping students find the perfect scholarship opportunities since 2023.</p>
+                                    <div className="flex space-x-4">
+                                        <a href="#" className="text-gray-400 hover:text-white"><i className="fab fa-facebook-f"></i></a>
+                                        <a href="#" className="text-gray-400 hover:text-white"><i className="fab fa-twitter"></i></a>
+                                        <a href="#" className="text-gray-400 hover:text-white"><i className="fab fa-instagram"></i></a>
+                                        <a href="#" className="text-gray-400 hover:text-white"><i className="fab fa-linkedin-in"></i></a>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
+                                    <ul className="space-y-3">
+                                        <li><a href="#" className="text-gray-400 hover:text-white">Home</a></li>
+                                        <li><a href="#" className="text-gray-400 hover:text-white">Scholarships</a></li>
+                                        <li><a href="#" className="text-gray-400 hover:text-white">Resources</a></li>
+                                        <li><a href="#" className="text-gray-400 hover:text-white">Blog</a></li>
+                                        <li><a href="#" className="text-gray-400 hover:text-white">About Us</a></li>
+                                    </ul>
+                                </div>
+                                
+                                <div>
+                                    <h4 className="text-lg font-semibold mb-6">Categories</h4>
+                                    <ul className="space-y-3">
+                                        <li><a href="#" className="text-gray-400 hover:text-white">STEM Scholarships</a></li>
+                                        <li><a href="#" className="text-gray-400 hover:text-white">Need-Based</a></li>
+                                        <li><a href="#" className="text-gray-400 hover:text-white">Merit-Based</a></li>
+                                        <li><a href="#" className="text-gray-400 hover:text-white">Minority Scholarships</a></li>
+                                        <li><a href="#" className="text-gray-400 hover:text-white">Study Abroad</a></li>
+                                    </ul>
+                                </div>
+                                
+                                <div>
+                                    <h4 className="text-lg font-semibold mb-6">Newsletter</h4>
+                                    <p className="text-gray-400 mb-4">Subscribe to get updates on new scholarships and deadlines</p>
+                                    <div className="flex">
+                                        <input 
+                                            type="email" 
+                                            placeholder="Your email address" 
+                                            className="bg-gray-700 text-white px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full"
+                                        />
+                                        <button className="bg-indigo-600 text-white px-4 py-2 rounded-r-lg hover:bg-indigo-700 transition-colors">
+                                            <i className="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                                <p className="text-gray-400 mb-4 md:mb-0">© 2023 ScholarFind. All rights reserved.</p>
+                                <div className="flex space-x-6">
+                                    <a href="#" className="text-gray-400 hover:text-white">Privacy Policy</a>
+                                    <a href="#" className="text-gray-400 hover:text-white">Terms of Service</a>
+                                    <a href="#" className="text-gray-400 hover:text-white">FAQ</a>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ScholarshipApp />);
+    </script>
+</body>
+</html>
