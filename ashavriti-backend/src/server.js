@@ -25,6 +25,7 @@ const __dirname = path.dirname(__filename);
 // ✅ Allowed Frontend Origins
 const allowedOrigins = [
   "http://localhost:8080",
+  "http://localhost:8081",
   "http://localhost:5173",
 ];
 

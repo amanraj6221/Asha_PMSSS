@@ -8,14 +8,20 @@ import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
 
 function UserLogin() {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState(""); // Change variable to represent both Username/Email
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("/auth/login", { email, password });
+      // ✅ Payload map includes universal identifier key and dynamic role validation parameters
+      const res = await api.post("/auth/login", { 
+        identifier: identifier, 
+        password: password,
+        role: "USER" // 👈 Dynamic Role parameter back-validation system map
+      });
+      
       const data = res.data;
 
       if (data.token) {
@@ -28,9 +34,10 @@ function UserLogin() {
       }
 
       alert("Login successful!");
-      navigate("/dashboard");
+      navigate("/dashboard"); // Redirect to the student workbench area
     } catch (err: any) {
       console.error("Login error:", err);
+      // 🔥 Server se aane waale strict explicit validation trace logs pop-up dikhayega 🔥
       alert(err.response?.data?.message || "Error logging in");
     }
   };
@@ -46,11 +53,12 @@ function UserLogin() {
         <h2 className="text-2xl font-bold text-center mb-6">User Login</h2>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          {/* ✅ Type shifted from 'email' to 'text' to accept username as identifier smoothly without browser pop-up validation checks */}
           <Input
-            type="email"
-            placeholder="Enter Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="Enter Username or Email"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
             required
           />
           <Input
@@ -83,6 +91,3 @@ function UserLogin() {
 }
 
 export default UserLogin;
-
-
-
